@@ -20,6 +20,8 @@ if __name__ == "__main__":
     tprint("Personal    assistant")
 
     word_completer = WordCompleter(handlers_dict.keys())
+    show_help_table = HandlerFactory.create_handler('help')
+    show_help_table.handler()
 
     while True:
         command = prompt("Input command>>> ", completer=word_completer)

@@ -1,5 +1,5 @@
 from AddressBook import AddressBook
-from Table import BookTable
+from Table import BookTable, HelpTable
 from Record import Record
 from abc import ABC, abstractmethod, ABCMeta
 from rich.console import Console
@@ -7,6 +7,7 @@ from decorators import input_error
 
 
 handlers_dict = {}  # Глобальний словник для HandlerFactory
+help_dict = {}  # Глобальний словник для таблиці HelpTable
 
 
 class HandlerMeta(ABCMeta):
@@ -15,6 +16,7 @@ class HandlerMeta(ABCMeta):
         cls = super().__new__(mcs, name, bases, nameplace)
         if cls.__name__ != 'Handler':
             handlers_dict[name.lower()] = cls()
+            help_dict[name.lower()] = cls.__doc__
         return cls
 
 
@@ -26,19 +28,21 @@ class Handler(ABC, metaclass=HandlerMeta):
 
 
 class Hello(Handler):
+    """Say hello!"""
 
     def handler(self):
         return print("Hello! I'm address book bot")
 
 
 class Exit(Handler):
+    """Exit from assistant"""
 
     def handler(self):
         return print("Good bye!")
 
 
 class Show(Handler):
-
+    """Show all contacts"""
     @input_error
     def handler(self):
         book = AddressBook()
@@ -48,8 +52,8 @@ class Show(Handler):
         console.print(show.get_table())
 
 
-class Make(Handler):
-
+class Create(Handler):
+    """Create a new contacts record"""
     @input_error
     def handler(self):
         book = AddressBook()
@@ -67,7 +71,7 @@ class Make(Handler):
 
 
 class Find(Handler):
-
+    """Find contacts record by name"""
     @input_error
     def handler(self):
         book = AddressBook()
@@ -79,7 +83,7 @@ class Find(Handler):
 
 
 class AddPhone(Handler):
-
+    """Add phone to the record"""
     @input_error
     def handler(self):
         book = AddressBook()
@@ -97,7 +101,7 @@ class AddPhone(Handler):
 
 
 class AddBirthday(Handler):
-
+    """Add contacts birthday to the record"""
     @input_error
     def handler(self):
         book = AddressBook()
@@ -115,7 +119,7 @@ class AddBirthday(Handler):
 
 
 class DeleteContact(Handler):
-
+    """Remove contacts record"""
     @input_error
     def handler(self):
         book = AddressBook()
@@ -127,6 +131,16 @@ class DeleteContact(Handler):
         book.to_pickle()
 
 
+class Help(Handler):
+    """Call command description"""
+
+    def handler(self):
+        console = Console()
+        show = HelpTable(help_dict)
+        console.print(show.get_table())
+
+
 if __name__ == "__main__":
 
     print(handlers_dict)
+    print(help_dict)
